@@ -1,0 +1,16 @@
+Options +FollowSymLinks -Indexes
+
+RewriteEngine On
+
+RewriteCond %{SCRIPT_FILENAME} !-d
+RewriteCond %{SCRIPT_FILENAME} !-f
+#RewriteRule ^/?(files?|(re)?sources?|src)/?(.*?)/(.*?)/?\??$ resource.php?TYPE=$3&NAME=$4&%{QUERY_STRING} [NC,L]
+RewriteRule ^/?(files?|(re)?sources?|src)/?(.*?)/?\??$ resource.php?PATH=$3&%{QUERY_STRING} [NC,L]
+RewriteCond %{SCRIPT_FILENAME} !-d
+RewriteCond %{SCRIPT_FILENAME} !-f
+RewriteRule ^/?(add[-_]?ons?|modules?|plug[-_]?ins?)([-_]?blocks?)?/?(.*?)/?\??$ module.php?PATH=$3&%{QUERY_STRING} [NC,L]
+RewriteCond %{SCRIPT_FILENAME} !-d
+RewriteCond %{SCRIPT_FILENAME} !-f
+RewriteRule ^(.*?)/?\??$ index.php?PATH=$1&%{QUERY_STRING} [NC,L]
+
+ErrorDocument 500 /errors/500.php
