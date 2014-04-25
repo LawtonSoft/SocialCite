@@ -1,0 +1,169 @@
+<?php
+	class Page Extends Instance {
+		protected static $instance = NULL;
+		
+		public static function get404() {
+			global $_VARS;
+			$DBI = Instance::get('DBI');
+			$id = Log::$status[$DBI->connect()];
+			
+			$_VARS["PAGE"]['status_code'] = array('id' => 404);
+			return Log::$status[$DBI->execute('SELECT * FROM page WHERE id = -404;',MYSQL_ASSOC)]['data']['result'][0];
+			
+			$DBI->disconnect();
+		}
+		
+		public static function template($_VARS) {
+			$DBI = Instance::get('DBI');
+			$id = Log::$status[$DBI->connect()];
+			
+			if($_VARS["PAGE"]['page_type_id'] < 3) {
+				eval('?>' . Log::$status[$DBI->execute('SELECT code FROM template WHERE id =' . $_VARS["WEBSITE"]['template'] . ';',MYSQL_ASSOC)]['data']['result'][0]['code']);
+			}
+			else {
+				eval('?>' . $_VARS["PAGE"]['body']);
+			}
+			$DBI->disconnect();
+		}
+		
+		public static function permissions(/* [ int $pageID [, $userID = null ]] */) {
+			$args = func_get_args();
+                        $pageID = $args[0];
+			
+			if(isset($args[1])) $userID = $args[1];
+			
+			$DBI = Instance::get('DBI');
+			//$permissions = Log::$status[$DBI->execute('SELECT permissions.* FROM permissions JOIN page_permissions ON permissions.id = page_permissions.permissions_id JOIN page ON page_permissions.page_id = page.id WHERE page.id = ' . $pageID . ';',MYSQL_ASSOC)]["data"]["result"];
+			$permissions = Log::$status[$DBI->execute('(SELECT DISTINCT permissions.* FROM permissions JOIN page_permissions ON permissions.id = page_permissions.permissions_id JOIN page ON page_permissions.page_id = page.id WHERE page.id = ' . $pageID . ') UNION (SELECT DISTINCT permissions.* FROM permissions JOIN page_group_permissions ON permissions.id = page_group_permissions.permissions_id JOIN page_group ON page_group_permissions.page_group_id = page_group.id JOIN page_group_member ON page_group.id = page_group_member.page_group_id JOIN page ON page_group_member.page_id = page.id WHERE page.id = ' . $pageID . ');',MYSQL_ASSOC)]["data"]["result"];
+			$DBI->disconnect();
+			return $permissions;
+		}
+	}
+	
+	class Module Extends Instance {
+		protected static $instance = NULL;
+		
+		// Check Module Position (requires template ID and position name)
+		public static function check($template_id, $position_name /* [ int $template_id [, string $position_name ]] */) {
+			$DBI = Instance::get('DBI');
+			$id = Log::$status[$DBI->connect()];
+			
+			$modules = Log::$status[$DBI->execute('SELECT url FROM module_code WHERE id IN (SELECT module_code_id FROM template_module_position WHERE template_position_id IN (SELECT id FROM template_position WHERE template_id = ' . $template_id . ' AND name = "' . $position_name . '"));',MYSQL_ASSOC)]['data']['result'];
+			$DBI->disconnect();
+			return $modules;
+		}
+		
+		// Get Module Code
+		public static function get($url /* [ string $url ] */) {
+			$DBI = Instance::get('DBI');
+			$id = Log::$status[$DBI->connect()];
+			
+			$module = Log::$status[$DBI->execute('SELECT * FROM module_code WHERE url = "' . $url . '";',MYSQL_ASSOC)]['data']['result'][0];
+			
+			$DBI->disconnect();
+			return $module;
+		}
+		
+		// Write Module Code (evals PHP or pastes code)
+		public static function write(/* [ string $url, [ mixed $data = null]] */) {
+			$args = func_get_args();
+			$module["get"] = self::get($args[0]);
+			if(isset($args[1]) && !empty($args[1])) $module["data"] = $args[1];
+			if($module["get"]["data_format_id"] == 3) eval('?>' . $module["get"]["code"]);
+			else if ($module["get"]["data_format_id"] == 2) echo $module["get"]["code"];
+			else echo htmlentities($module["get"]["code"]);
+		}
+		public static function permissions(/* [ int $moduleCodeID [, $userID = null ]] */) {
+			$args = func_get_args();
+                        $moduleCodeID = $args[0];
+			
+			if(isset($args[1])) $userID = $args[1];
+			
+			$DBI = Instance::get('DBI');
+			$permissions = Log::$status[$DBI->execute('SELECT permissions.* FROM permissions JOIN module_code_permissions ON permissions.id = module_code_permissions.permissions_id JOIN module_code ON module_code_permissions.module_code_id = module_code.id WHERE module_code.id = ' . $moduleCodeID . ';',MYSQL_ASSOC)]["data"]["result"];
+			$DBI->disconnect();
+			return $permissions;
+		}
+	}
+	
+	// User Class
+	class Account Extends Instance {
+		protected static $instance = NULL;
+		// Get User Info
+		public static function getUser($username) {
+			$DBI = Instance::get('DBI');
+			$result["success"] = 0;
+			
+			if(isset($username)) {
+				$user = Log::$status[$DBI->execute('SELECT * FROM user WHERE lower(username) = "' . strtolower($username) . '";',MYSQL_ASSOC)]["data"]["result"][0];
+				if(isset($user) && !empty($user)) {
+					$result["data"] = $user;
+					$result["permissions"] = Log::$status[$DBI->execute('(SELECT DISTINCT permissions.* FROM permissions JOIN user_permissions ON permissions.id = user_permissions.permissions_id JOIN user ON user_permissions.user_id = user.id WHERE user.id = "' . $user['id'] . '") UNION (SELECT DISTINCT permissions.* FROM permissions JOIN user_group_permissions ON permissions.id = user_group_permissions.permissions_id JOIN user_group ON user_group_permissions.user_group_id = user_group.id JOIN user_group_member ON user_group.id = user_group_member.user_group_id JOIN user ON user_group_member.user_id = user.id WHERE user.id = "' . $user['id'] . '");',MYSQL_ASSOC)]["data"]["result"];
+					$result["message"] = "Account verified";
+					$result["success"] = 1;
+				}
+				else $result["message"] = "No User Found";
+			}
+			else $result["message"] = "Insufficient Data";
+			
+			$DBI->disconnect();
+			return $result;
+		}
+		
+		// Login
+		public static function login($username, $password, $timeout) {
+			$DBI = Instance::get('DBI');
+			$result["success"] = 0;
+			
+			if(isset($username) && isset($password)) {
+				$verify = Log::$status[$DBI->execute('SELECT * FROM user WHERE lower(username) = "' . strtolower($username) . '" AND password = "' . md5($password) . '";',MYSQL_ASSOC)]["data"]["result"][0];
+				if(isset($verify) && !empty($verify)) {
+					$result["data"] = $verify;
+					$result["permissions"] = Log::$status[$DBI->execute('(SELECT DISTINCT permissions.* FROM permissions JOIN user_permissions ON permissions.id = user_permissions.permissions_id JOIN user ON user_permissions.user_id = user.id WHERE user.id = "' . $user['id'] . '") UNION (SELECT DISTINCT permissions.* FROM permissions JOIN user_group_permissions ON permissions.id = user_group_permissions.permissions_id JOIN user_group ON user_group_permissions.user_group_id = user_group.id JOIN user_group_member ON user_group.id = user_group_member.user_group_id JOIN user ON user_group_member.user_id = user.id WHERE user.id = "' . $user['id'] . '");',MYSQL_ASSOC)]["data"]["result"];
+					self::logout();
+					
+					Instance::get('Session');
+					Session::setCookies('username', $username, $timeout);
+					Session::setCookies('password', md5($password), $timeout);
+					setCookie('timeout', $timeout, time() + $timeout);
+					$result["message"] = "Account verified";
+					$result["success"] = 1;
+				}
+				else $result["message"] = "Bad Credentials";
+			}
+			else $result["message"] = "Insufficient Data";
+			
+			$DBI->disconnect();
+			return $result;
+		}
+		
+		// Logout
+		public static function logout() {
+			Instance::get('Session');
+			Log::$status[Session::unsetCookies('username')]['data'];
+			Log::$status[Session::unsetCookies('password')]['data'];
+			return TRUE;
+		}
+		
+		// Verify Account
+		public static function verify() {
+			$DBI = Instance::get('DBI');
+			$result["success"] = 0;
+			
+			if(isset($_COOKIE["username"]) && isset($_COOKIE["password"])) {
+				$verify = Log::$status[$DBI->execute('SELECT id, username, password, email_address, first_name, last_name FROM user WHERE username = "' . $_COOKIE["username"] . '" AND password = "' . $_COOKIE["password"] . '";',MYSQL_ASSOC)]["data"]["result"][0];
+				if(isset($verify) && !empty($verify)) {
+					$result["data"] = $verify;
+					$result["permissions"] = Log::$status[$DBI->execute('(SELECT DISTINCT permissions.* FROM permissions JOIN user_permissions ON permissions.id = user_permissions.permissions_id JOIN user ON user_permissions.user_id = user.id WHERE user.id = "' . $user['id'] . '") UNION (SELECT DISTINCT permissions.* FROM permissions JOIN user_group_permissions ON permissions.id = user_group_permissions.permissions_id JOIN user_group ON user_group_permissions.user_group_id = user_group.id JOIN user_group_member ON user_group.id = user_group_member.user_group_id JOIN user ON user_group_member.user_id = user.id WHERE user.id = "' . $user['id'] . '");',MYSQL_ASSOC)]["data"]["result"];
+					$result["message"] = "Account verified";
+					$result["success"] = 1;
+				}
+				else $result["message"] = "Bad Credentials";
+			}
+			else $result["message"] = "Insufficient Data";
+			
+			$DBI->disconnect();
+			return $result;
+		}
+	}
+?>
