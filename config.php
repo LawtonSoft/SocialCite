@@ -5,7 +5,7 @@
 	define('BASE_DIR', realpath($_SERVER["PHP_SELF"]));
 
 	//  ---    FRAM3W0RK     ---
-	define('FRAM3W0RK_DIR', 'Fram3w0rk/');
+	define('FRAM3W0RK_DIR', '/var/www/Fram3w0rk/');
 
 	//  ---       DBI        ---
 	define('DBI_SERVER', 'localhost');
