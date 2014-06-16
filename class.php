@@ -9,8 +9,6 @@
 			
 			$_VARS["PAGE"]['status_code'] = array('id' => 404);
 			return Log::$status[$DBI->execute('SELECT * FROM page WHERE id = -404;',MYSQL_ASSOC)]['data']['result'][0];
-			
-			$DBI->disconnect();
 		}
 		
 		public static function template($_VARS) {
@@ -18,12 +16,11 @@
 			$id = Log::$status[$DBI->connect()];
 			
 			if($_VARS["PAGE"]['page_type_id'] < 3) {
-				eval('?>' . Log::$status[$DBI->execute('SELECT code FROM template WHERE id =' . $_VARS["WEBSITE"]['template'] . ';',MYSQL_ASSOC)]['data']['result'][0]['code']);
+				eval('?>' . Log::$status[$DBI->execute('SELECT code FROM template WHERE id =' . $_VARS["WEBSITE"]['template_id'] . ';',MYSQL_ASSOC)]['data']['result'][0]['code']);
 			}
 			else {
 				eval('?>' . $_VARS["PAGE"]['body']);
 			}
-			$DBI->disconnect();
 		}
 		
 		public static function permissions(/* [ int $pageID [, $userID = null ]] */) {
@@ -35,7 +32,6 @@
 			$DBI = Instance::get('DBI');
 			//$permissions = Log::$status[$DBI->execute('SELECT permissions.* FROM permissions JOIN page_permissions ON permissions.id = page_permissions.permissions_id JOIN page ON page_permissions.page_id = page.id WHERE page.id = ' . $pageID . ';',MYSQL_ASSOC)]["data"]["result"];
 			$permissions = Log::$status[$DBI->execute('(SELECT DISTINCT permissions.* FROM permissions JOIN page_permissions ON permissions.id = page_permissions.permissions_id JOIN page ON page_permissions.page_id = page.id WHERE page.id = ' . $pageID . ') UNION (SELECT DISTINCT permissions.* FROM permissions JOIN page_group_permissions ON permissions.id = page_group_permissions.permissions_id JOIN page_group ON page_group_permissions.page_group_id = page_group.id JOIN page_group_member ON page_group.id = page_group_member.page_group_id JOIN page ON page_group_member.page_id = page.id WHERE page.id = ' . $pageID . ');',MYSQL_ASSOC)]["data"]["result"];
-			$DBI->disconnect();
 			return $permissions;
 		}
 	}
@@ -43,29 +39,29 @@
 	class Module Extends Instance {
 		protected static $instance = NULL;
 		
-		// Check Module Position (requires template ID and position name)
-		public static function check($template_id, $position_name /* [ int $template_id [, string $position_name ]] */) {
+		// Check Module Position for Modules (requires template ID and position name)
+		public static function check($template_id, $position_name /* int $template_id, string $position_name */) {
 			$DBI = Instance::get('DBI');
 			$id = Log::$status[$DBI->connect()];
 			
-			$modules = Log::$status[$DBI->execute('SELECT url FROM module_code WHERE id IN (SELECT module_code_id FROM template_module_position WHERE template_position_id IN (SELECT id FROM template_position WHERE template_id = ' . $template_id . ' AND name = "' . $position_name . '"));',MYSQL_ASSOC)]['data']['result'];
-			$DBI->disconnect();
+			$modules = Log::$status[$DBI->execute("SELECT CONCAT(module.url, '/', module_code.url) url FROM module_code JOIN module ON module_code.module_id = module.id WHERE module_code.id IN (SELECT module_script_id FROM template_module_script_position WHERE template_position_id IN (SELECT id FROM template_position WHERE template_id = " . $template_id . " AND name = '" . $position_name . "'));", MYSQL_ASSOC)]['data']['result'];
 			return $modules;
 		}
 		
 		// Get Module Code
-		public static function get($url /* [ string $url ] */) {
+		public static function get($url /* string $url */) {
 			$DBI = Instance::get('DBI');
 			$id = Log::$status[$DBI->connect()];
 			
-			$module = Log::$status[$DBI->execute('SELECT * FROM module_code WHERE url = "' . $url . '";',MYSQL_ASSOC)]['data']['result'][0];
-			
-			$DBI->disconnect();
+			//$module = Log::$status[$DBI->execute('SELECT * FROM module_code WHERE url = "' . $url . '";', MYSQL_ASSOC)]['data']['result'][0];
+			$module = Log::$status[$DBI->execute("SELECT module_code.*, module.url module_url FROM module_code JOIN module ON module_code.module_id = module.id WHERE (module.url IS NULL OR module.url = '') AND module_code.url = '" . $url . "' OR CONCAT(module.url, '/', module_code.url) = '" . $url . "';", MYSQL_ASSOC)]["data"]["result"][0];
+			$module["url"] = (isset($module["module_url"]) && !empty($module["module_url"]) ? $module["module_url"] . '/' : '') . $module["url"];
+			unset($module["module_url"]);
 			return $module;
 		}
 		
 		// Write Module Code (evals PHP or pastes code)
-		public static function write(/* [ string $url, [ mixed $data = null]] */) {
+		public static function write(/* string $url, [ mixed $data = null] */) {
 			$args = func_get_args();
 			$module["get"] = self::get($args[0]);
 			if(isset($args[1]) && !empty($args[1])) $module["data"] = $args[1];
@@ -73,7 +69,7 @@
 			else if ($module["get"]["data_format_id"] == 2) echo $module["get"]["code"];
 			else echo htmlentities($module["get"]["code"]);
 		}
-		public static function permissions(/* [ int $moduleCodeID [, $userID = null ]] */) {
+		public static function permissions(/* int $moduleCodeID [, $userID = null ] */) {
 			$args = func_get_args();
                         $moduleCodeID = $args[0];
 			
@@ -81,7 +77,6 @@
 			
 			$DBI = Instance::get('DBI');
 			$permissions = Log::$status[$DBI->execute('SELECT permissions.* FROM permissions JOIN module_code_permissions ON permissions.id = module_code_permissions.permissions_id JOIN module_code ON module_code_permissions.module_code_id = module_code.id WHERE module_code.id = ' . $moduleCodeID . ';',MYSQL_ASSOC)]["data"]["result"];
-			$DBI->disconnect();
 			return $permissions;
 		}
 	}
@@ -105,8 +100,6 @@
 				else $result["message"] = "No User Found";
 			}
 			else $result["message"] = "Insufficient Data";
-			
-			$DBI->disconnect();
 			return $result;
 		}
 		
@@ -133,7 +126,6 @@
 			}
 			else $result["message"] = "Insufficient Data";
 			
-			$DBI->disconnect();
 			return $result;
 		}
 		
@@ -162,7 +154,6 @@
 			}
 			else $result["message"] = "Insufficient Data";
 			
-			$DBI->disconnect();
 			return $result;
 		}
 	}
