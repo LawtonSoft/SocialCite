@@ -30,7 +30,9 @@
 					$_VARS["PAGE"]['status_code'] = array('id' => 200, 'url' => BASE_DIR . '/' . $page['url'], 'extension' => implode("/", array_slice($chain, $i + 1)));
 				}
 				unset($pageExtended);
+				unset($pageExtended);
 			}
+			unset($chain);
 		}
 		
 		// Return 404
