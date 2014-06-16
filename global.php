@@ -3,7 +3,7 @@
 	require_once('config.php');
 	
 	// Require Fram3w0rk
-	require_once('Fram3w0rk/index.php');
+	require_once(FRAM3W0RK_DIR . 'index.php');
 	Instance::$import = array('class.php');
 	Instance::load();
 	
@@ -20,9 +20,16 @@
 	$id = Log::$status[$DBI->connect()];
 	
 	// Pull in CMS variables
-	$vars = Log::$status[$DBI->execute("SELECT * FROM module JOIN module_variable ON module.id = module_variable.module_id;", MYSQL_ASSOC)]['data']['result'];
+	//$vars = Log::$status[$DBI->execute("SELECT * FROM module JOIN module_variable ON module.id = module_variable.module_id;", MYSQL_ASSOC)]['data']['result'];
+	$vars = Log::$status[$DBI->execute("SELECT * FROM module;", MYSQL_ASSOC)]['data']['result'];
 	foreach($vars as $var) {
-		switch ($var['type']) {
+		try {
+			$_VARS[$var["name"]] = json_decode($var['variables'], true);
+		}
+		catch (Exception $e) {
+			$_VARS[$var["module"]][$var['name']] = $var['value'];
+		}
+		/*switch ($var['type']) {
 			case 'bool':
 			case 'boolean':
 			//	$_VARS[$var["module"]][$var['name']] = ((mb_strtoupper(trim($var['value'])) === mb_strtoupper("true")) ? TRUE : FALSE);
@@ -37,7 +44,7 @@
 			case 'str':
 			default:
 				$_VARS[$var["module"]][$var['name']] = $var['value'];
-		}
+		}*/
 	}
 	unset($vars);
 	
