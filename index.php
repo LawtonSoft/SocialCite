@@ -1,6 +1,7 @@
 <?php
 	require_once('global.php');
 	
+	// PAGES
 	if(!isset($_REQUEST["TYPE"]) || $_REQUEST["TYPE"] == 'PAGE') {
 		$_VARS["PAGE"]['url_request'] = $_REQUEST["PATH"];
 		$_VARS["PAGE"]['status_code'] = array('id' => 200);
@@ -76,6 +77,7 @@
 		
 		Page::template($_VARS);
 	}
+	// MODULES
 	elseif($_REQUEST["TYPE"] == 'MODULE') {
 		$_VARS["MODULE"]['name'] = $_REQUEST["PATH"];
 		// Pull module data
@@ -118,9 +120,8 @@
 		unset($page);
 		unset($module);
 	}
+	// RESOURCES
 	elseif($_REQUEST["TYPE"] == 'RESOURCE') {
-		//$_VARS["FILE"]['type'] = $_REQUEST["TYPE"];
-		//$_VARS["FILE"]['name'] = $_REQUEST["NAME"];
 		$_VARS["FILE"]['path'] = $_REQUEST["PATH"];
 		$_VARS["FILE"]['download'] = $_REQUEST["download"];
 		
