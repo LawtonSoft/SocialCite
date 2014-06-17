@@ -39,6 +39,22 @@
 	class Module Extends Instance {
 		protected static $instance = NULL;
 		
+		// Get Module Variables
+		public static function variables($url /* string $url */) {
+			$DBI = Instance::get('DBI');
+			$id = Log::$status[$DBI->connect()];
+			
+			$vars = Log::$status[$DBI->execute("SELECT * FROM module WHERE LOWER(url) = '" . strtolower($url) . "';", MYSQL_ASSOC)]['data']['result'][0];
+			try {
+				$variables = json_decode($vars['variables'], true);
+			}
+			catch (Exception $e) {
+				$variables = $vars['variables'];
+			}
+			
+			return $variables;
+		}
+		
 		// Check Module Position for Modules (requires template ID and position name)
 		public static function check($template_id, $position_name /* int $template_id, string $position_name */) {
 			$DBI = Instance::get('DBI');
@@ -53,6 +69,8 @@
 			$DBI = Instance::get('DBI');
 			$id = Log::$status[$DBI->connect()];
 			
+			$_VARS["MODULE"][$url] = Module::variables($url);
+			
 			//$module = Log::$status[$DBI->execute('SELECT * FROM module_code WHERE url = "' . $url . '";', MYSQL_ASSOC)]['data']['result'][0];
 			$module = Log::$status[$DBI->execute("SELECT module_code.*, module.url module_url FROM module_code JOIN module ON module_code.module_id = module.id WHERE (module.url IS NULL OR module.url = '') AND module_code.url = '" . $url . "' OR CONCAT(module.url, '/', module_code.url) = '" . $url . "';", MYSQL_ASSOC)]["data"]["result"][0];
 			$module["url"] = (isset($module["module_url"]) && !empty($module["module_url"]) ? $module["module_url"] . '/' : '') . $module["url"];
@@ -64,11 +82,17 @@
 		public static function write(/* string $url, [ mixed $data = null] */) {
 			$args = func_get_args();
 			$module["get"] = self::get($args[0]);
+			
+			$_VARS["MODULE"][$url] = Module::variables($url);
+			
 			if(isset($args[1]) && !empty($args[1])) $module["data"] = $args[1];
 			if($module["get"]["data_format_id"] == 3) eval('?>' . $module["get"]["code"]);
 			else if ($module["get"]["data_format_id"] == 2) echo $module["get"]["code"];
 			else echo htmlentities($module["get"]["code"]);
+			unset($_VARS[$url]);
 		}
+		
+		// Get Permissions
 		public static function permissions(/* int $moduleCodeID [, $userID = null ] */) {
 			$args = func_get_args();
                         $moduleCodeID = $args[0];
