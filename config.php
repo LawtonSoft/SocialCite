@@ -1,5 +1,5 @@
 <?php
-	// ---- DEFINE CONSTANTS ----
+	// ==== DEFINE CONSTANTS ====
 
 	//  ---   DIRECTORIES    ---
 	define('BASE_DIR', realpath($_SERVER["PHP_SELF"]));
@@ -13,4 +13,8 @@
 	define('DBI_PASS', 'password');
 	define('DBI_DB', 'dbname');
 	define('DBI_PREFIX', '');
-?>
+	
+	//  ---       FTP        ---
+	define('FTP_SERVER', 'localhost');
+	define('FTP_USER', 'user');
+	define('FTP_PASS', 'password');
