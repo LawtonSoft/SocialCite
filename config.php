@@ -8,6 +8,7 @@
 	define('FRAM3W0RK_DIR', '/var/www/Fram3w0rk/');
 
 	//  ---       DBI        ---
+	define('DBI_LANG', 'mysql');
 	define('DBI_SERVER', 'localhost');
 	define('DBI_USER', 'user');
 	define('DBI_PASS', 'password');
