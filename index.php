@@ -71,7 +71,7 @@
 		unset($page);
 		
 		// Log access into database
-		Log::$status[$DBI->execute('INSERT INTO log_access (code, url, page_id, ip_address, user_id) VALUES(' . $_VARS["PAGE"]['status_code']['id'] . ', "' . $_VARS["PAGE"]['url_request'] . '", ' . (isset($_VARS["PAGE"]['id']) ? $_VARS["PAGE"]['id'] : 'NULL') . ', "' . $_SERVER["REMOTE_ADDR"] . '", ' . (isset($_VARS["WEBSITE"]['account']['data']['id']) ? $_VARS["WEBSITE"]['account']['data']['id'] : 'NULL') . ');')];
+		Log::$status[$DBI->execute('INSERT INTO log_access (code, url, page_id, ip_address, user_agent, user_id) VALUES(' . $_VARS["PAGE"]['status_code']['id'] . ', "' . $_VARS["PAGE"]['url_request'] . '", ' . (isset($_VARS["PAGE"]['id']) ? $_VARS["PAGE"]['id'] : 'NULL') . ', "' . $_SERVER["REMOTE_ADDR"] . '", "' . $DBI->escape_string($_SERVER["HTTP_USER_AGENT"]) . '", ' . (isset($_VARS["WEBSITE"]['account']['data']['id']) ? $_VARS["WEBSITE"]['account']['data']['id'] : 'NULL') . ');')];
 		if(isset($_VARS["PAGE"]['header'])) eval('?>' . $_VARS["PAGE"]['header']);
 		
 		Page::template($_VARS);
