@@ -20,18 +20,17 @@
 				}
 			}
 			
-			// Check extendible pages (and page aliases)
+			// Check extendable pages (and page aliases)
 			if(!isset($page) || empty($page)) {
 				$chain = explode("/", $_VARS["PAGE"]['url_request']);
 				for($i = 0; $i < count($chain); $i++) {
 					$url = implode("/", array_slice($chain, 0, $i + 1));
-					$pageExtended = Log::$status[$DBI->execute('SELECT page.*, page_type.description, page_type.noindex, user.username, user.first_name, user.last_name FROM page LEFT JOIN user ON page.author_user_id = user.id LEFT JOIN page_type ON page.page_type_id = page_type.id LEFT JOIN page_alias ON page.id = page_alias.page_id WHERE page.extendible = 1 AND (page.url = "' . $url . '" OR page_alias.alias_url ="' . $url . '");', MYSQL_ASSOC)]['data']['result'][0];
+					$pageExtended = Log::$status[$DBI->execute('SELECT page.*, page_type.description, page_type.noindex, user.username, user.first_name, user.last_name FROM page LEFT JOIN user ON page.author_user_id = user.id LEFT JOIN page_type ON page.page_type_id = page_type.id LEFT JOIN page_alias ON page.id = page_alias.page_id WHERE page.extendable = 1 AND (page.url = "' . $url . '" OR page_alias.alias_url ="' . $url . '");', MYSQL_ASSOC)]['data']['result'][0];
 					
 					if(isset($pageExtended) && !empty($pageExtended)) {
 						$page = $pageExtended;
 						$_VARS["PAGE"]['status_code'] = array('id' => 200, 'url' => BASE_DIR . '/' . $page['url'], 'extension' => implode("/", array_slice($chain, $i + 1)));
 					}
-					unset($pageExtended);
 					unset($pageExtended);
 				}
 				unset($chain);
@@ -80,6 +79,7 @@
 	// MODULES
 	elseif($_REQUEST["TYPE"] == 'MODULE') {
 		$_VARS["MODULE"]['name'] = $_REQUEST["PATH"];
+		
 		// Pull module data
 		if(isset($_VARS["MODULE"]['name']) && !empty($_VARS["MODULE"]['name'])) $module = Module::get($_VARS["MODULE"]["name"]);
 		if(!isset($module) || empty($module)) $page = Page::get404();
