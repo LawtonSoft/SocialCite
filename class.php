@@ -65,31 +65,41 @@
 		}
 		
 		// Get Module Code
-		public static function get($url /* string $url */) {
+		public static function get(/* string $url */) {
+			$args = func_get_args();
 			$DBI = Instance::get('DBI');
 			$id = Log::$status[$DBI->connect()];
 			
-			$_VARS["MODULE"][$url] = Module::variables($url);
+			$url = $args[0];
 			
 			//$module = Log::$status[$DBI->execute('SELECT * FROM module_code WHERE url = "' . $url . '";', MYSQL_ASSOC)]['data']['result'][0];
-			$module = Log::$status[$DBI->execute("SELECT module_code.*, module.url module_url FROM module_code JOIN module ON module_code.module_id = module.id WHERE (module.url IS NULL OR module.url = '') AND module_code.url = '" . $url . "' OR CONCAT(module.url, '/', module_code.url) = '" . $url . "';", MYSQL_ASSOC)]["data"]["result"][0];
-			$module["url"] = (isset($module["module_url"]) && !empty($module["module_url"]) ? $module["module_url"] . '/' : '') . $module["url"];
-			unset($module["module_url"]);
-			return $module;
+			$module = Log::$status[$DBI->execute("SELECT module_code.*, module.name module_name, module.url module_url FROM module_code JOIN module ON module_code.module_id = module.id WHERE (module.url IS NULL OR module.url = '') AND module_code.url = '" . $url . "' OR CONCAT(module.url, '/', module_code.url) = '" . $url . "';", MYSQL_ASSOC)]["data"]["result"][0];
+			if(!empty($module)) {
+				$module["url"] = (isset($module["module_url"]) && !empty($module["module_url"]) ? $module["module_url"] . '/' : '') . $module["url"];
+				//unset($module["module_url"]);
+				return $module;
+			}
 		}
 		
 		// Write Module Code (evals PHP or pastes code)
-		public static function write(/* string $url, [ mixed $data = null] */) {
+		public static function write(/* string $url [, mixed $data = null] */) {
 			$args = func_get_args();
-			$module["get"] = self::get($args[0]);
+			$DBI = Instance::get('DBI');
+			$id = Log::$status[$DBI->connect()];
 			
-			$_VARS["MODULE"][$url] = Module::variables($url);
+			$url = $args[0];
+			if(isset($args[1]) && !empty($args[1])) $data = $args[1];
 			
-			if(isset($args[1]) && !empty($args[1])) $module["data"] = $args[1];
-			if($module["get"]["data_format_id"] == 3) eval('?>' . $module["get"]["code"]);
-			else if ($module["get"]["data_format_id"] == 2) echo $module["get"]["code"];
-			else echo htmlentities($module["get"]["code"]);
-			unset($_VARS[$url]);
+			$module_url = self::get($url);
+			
+			require('global.php');
+			$_VARS["MODULE"][$module_url["module_url"]] = array_merge((array)Module::variables($module_url["module_url"]), (array)$module_url);
+			$module_url = $module_url["module_url"];
+			if($_VARS["MODULE"][$module_url]["data_format_id"] == 3) eval('?>' . $_VARS["MODULE"][$module_url]["code"]);
+			else if ($_VARS["MODULE"][$module_url]["data_format_id"] == 2) echo $_VARS["MODULE"][$module_url]["code"];
+			else echo htmlentities($_VARS["MODULE"][$module_url]["code"]);
+			unset($_VARS["MODULE"][$module_url]);
+			unset($module_url);
 		}
 		
 		// Get Permissions
