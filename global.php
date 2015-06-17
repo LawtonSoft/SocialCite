@@ -10,14 +10,10 @@
 	// Create global array
 	$_VARS = array();
 	
-	$_VARS['PHP']['version'] = phpversion();
-	$_VARS['PAGE']['request']['get'] = $_GET;
-	$_VARS['PAGE']['request']['post'] = $_POST;
-	
 	// Create defaults for DBI
-	DBI::setDefaults(array("type"=>DBI_LANG, "host"=>DBI_SERVER, "user"=>DBI_USER, "pass"=>DBI_PASS, "database"=>DBI_DB));
 	$DBI = Instance::get('DBI');
-	Log::$status[$DBI->connect()];
+	DBI::setDefaults(array("lang"=>DBI_LANG, "host"=>DBI_SERVER, "user"=>DBI_USER, "pass"=>DBI_PASS, "database"=>DBI_DB));
+	$DBI->connect();
 	
 	// Create defaults for FTP
 	FTP::setDefaults(FTP_SERVER, FTP_USER, FTP_PASS);
@@ -27,6 +23,11 @@
 	// Pull in CMS variables
 	$_VARS["SOCIALCITE"] = Module::variables('socialcite');
 	$_VARS["WEBSITE"] = Module::variables('');
+	
+	$_VARS['PHP']['version'] = phpversion();
+	if($_VARS["WEBSITE"]['mode'] == "DEV") $_VARS['PHP']['extensions'] = get_loaded_extensions();
+	$_VARS['PAGE']['request']['get'] = $_GET;
+	$_VARS['PAGE']['request']['post'] = $_POST;
 	
 	date_default_timezone_set($_VARS["WEBSITE"]['time_zone']);
 	
