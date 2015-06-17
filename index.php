@@ -74,7 +74,7 @@
 		Log::$status[$DBI->execute('INSERT INTO log_access (code, url, page_id, ip_address, user_agent, user_id) VALUES(' . $_VARS["PAGE"]['status_code']['id'] . ', "' . $_VARS["PAGE"]['url_request'] . '", ' . (isset($_VARS["PAGE"]['id']) ? $_VARS["PAGE"]['id'] : 'NULL') . ', "' . $_SERVER["REMOTE_ADDR"] . '", "' . $DBI->escape_string($_SERVER["HTTP_USER_AGENT"]) . '", ' . (isset($_VARS["WEBSITE"]['account']['data']['id']) ? $_VARS["WEBSITE"]['account']['data']['id'] : 'NULL') . ');')];
 		if(isset($_VARS["PAGE"]['header'])) eval('?>' . $_VARS["PAGE"]['header']);
 		
-		Page::template($_VARS);
+		Page::template();
 	}
 	// MODULES
 	elseif($_REQUEST["TYPE"] == 'MODULE') {
@@ -110,7 +110,7 @@
 		}
 		if(isset($page['id'])) {
 			$_VARS["PAGE"] = array_merge((array)$_VARS["PAGE"], (array)$page);
-			Page::template($_VARS);
+			Page::template();
 		}
 		else {
 			$_VARS["MODULE"] = array_merge((array)$_VARS["MODULE"], (array)$module);
@@ -132,7 +132,7 @@
 			$page = Log::$status[$DBI->execute('SELECT * FROM page WHERE id = -404;',MYSQL_ASSOC)]['data']['result'][0];
 			$_VARS["PAGE"] = array_merge((array)$_VARS["PAGE"], (array)$page);
 			unset($page);
-			Page::template($_VARS);
+			Page::template();
 		}
 		else {
 			$_VARS["FILE"] = array_merge((array)$_VARS["FILE"], (array)$file);
