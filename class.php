@@ -11,7 +11,8 @@
 			return Log::$status[$DBI->execute('SELECT * FROM page WHERE id = -404;',MYSQL_ASSOC)]['data']['result'][0];
 		}
 		
-		public static function template($_VARS) {
+		public static function template() {
+			global $_VARS;
 			$DBI = Instance::get('DBI');
 			$id = Log::$status[$DBI->connect()];
 			
@@ -95,9 +96,20 @@
 			require('global.php');
 			$_VARS["MODULE"][$module_url["module_url"]] = array_merge((array)Module::variables($module_url["module_url"]), (array)$module_url);
 			$module_url = $module_url["module_url"];
-			if($_VARS["MODULE"][$module_url]["data_format_id"] == 3) eval('?>' . $_VARS["MODULE"][$module_url]["code"]);
-			else if ($_VARS["MODULE"][$module_url]["data_format_id"] == 2) echo $_VARS["MODULE"][$module_url]["code"];
-			else echo htmlentities($_VARS["MODULE"][$module_url]["code"]);
+			switch($_VARS["MODULE"][$module_url]["data_format_id"]) {
+				case 3:
+					eval('?>' . $_VARS["MODULE"][$module_url]["code"]);
+					break;
+				case 2:
+					echo $_VARS["MODULE"][$module_url]["code"];
+					break;
+				case 4:
+					echo $_VARS["MODULE"][$module_url]["code"];
+					break;
+				case 1:
+				default:
+					echo htmlentities($_VARS["MODULE"][$module_url]["code"]);
+			}
 			unset($_VARS["MODULE"][$module_url]);
 			unset($module_url);
 		}
@@ -118,6 +130,7 @@
 	// User Class
 	class Account Extends Instance {
 		protected static $instance = NULL;
+		
 		// Get User Info
 		public static function getUser($username) {
 			$DBI = Instance::get('DBI');
@@ -138,7 +151,13 @@
 		}
 		
 		// Login
-		public static function login($username, $password, $timeout) {
+		public static function login(/* string $username, string $password, int $timeout [, mixed $options = null ] */) {
+			$args = func_get_args();
+			$username = $args[0];
+			$password = $args[1];
+			$timeout = $args[2];
+			$options = $args[3];
+			
 			$DBI = Instance::get('DBI');
 			$result["success"] = 0;
 			
@@ -165,9 +184,11 @@
 		
 		// Logout
 		public static function logout() {
+			global $_VARS;
 			Instance::get('Session');
 			Log::$status[Session::unsetCookies('username')]['data'];
 			Log::$status[Session::unsetCookies('password')]['data'];
+			$_VARS["WEBSITE"]["account"] = array("success" => 0, "message" => "Insufficient Data");
 			return TRUE;
 		}
 		
