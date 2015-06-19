@@ -95,7 +95,7 @@
 							<a data-toggle="tab" href="#welcome" class="btn btn-default"><span class="glyphicon glyphicon-arrow-left"></span> Welcome</a>
 						</div>
 						<div class="form-group col-xs-6">
-							<a data-toggle="tab" href="#db" class="btn btn-success pull-right">Database <span class="glyphicon glyphicon-arrow-right"></span></a>
+							<a data-toggle="tab" href="#db" class="btn btn-default pull-right">Database <span class="glyphicon glyphicon-arrow-right"></span></a>
 						</div>
 					</div>
 					<h1>Website Set-up</h1>
@@ -163,7 +163,7 @@
 							<a data-toggle="tab" href="#welcome" class="btn btn-default"><span class="glyphicon glyphicon-arrow-left"></span> Welcome</a>
 						</div>
 						<div class="form-group col-xs-6">
-							<a data-toggle="tab" href="#db" class="btn btn-success pull-right">Database <span class="glyphicon glyphicon-arrow-right"></span></a>
+							<a data-toggle="tab" href="#db" class="btn btn-default pull-right">Database <span class="glyphicon glyphicon-arrow-right"></span></a>
 						</div>
 					</div>
 				</div>
@@ -173,7 +173,7 @@
 							<a data-toggle="tab" href="#site" class="btn btn-default"><span class="glyphicon glyphicon-arrow-left"></span> Website Set-up</a>
 						</div>
 						<div class="form-group col-xs-6">
-							<a data-toggle="tab" href="#ftp" class="btn btn-success pull-right">File Transfer <span class="glyphicon glyphicon-arrow-right"></span></a>
+							<a data-toggle="tab" href="#ftp" class="btn btn-default pull-right">File Transfer <span class="glyphicon glyphicon-arrow-right"></span></a>
 						</div>
 					</div>
 					<h1>Database</h1>
@@ -241,7 +241,7 @@
 							<a data-toggle="tab" href="#site" class="btn btn-default"><span class="glyphicon glyphicon-arrow-left"></span> Website Set-up</a>
 						</div>
 						<div class="form-group col-xs-6">
-							<a data-toggle="tab" href="#ftp" class="btn btn-success pull-right">File Transfer <span class="glyphicon glyphicon-arrow-right"></span></a>
+							<a data-toggle="tab" href="#ftp" class="btn btn-default pull-right">File Transfer <span class="glyphicon glyphicon-arrow-right"></span></a>
 						</div>
 					</div>
 				</div>
@@ -251,7 +251,7 @@
 							<a data-toggle="tab" href="#db" class="btn btn-default"><span class="glyphicon glyphicon-arrow-left"></span> Database</a>
 						</div>
 						<div class="form-group col-xs-6">
-							<a data-toggle="tab" href="#review" class="btn btn-success pull-right">Review <span class="glyphicon glyphicon-arrow-right"></span></a>
+							<a data-toggle="tab" href="#review" class="btn btn-default pull-right">Review <span class="glyphicon glyphicon-arrow-right"></span></a>
 						</div>
 					</div>
 					<h1>File Transfer</h1>
@@ -320,7 +320,7 @@
 							<a data-toggle="tab" href="#db" class="btn btn-default"><span class="glyphicon glyphicon-arrow-left"></span> Database</a>
 						</div>
 						<div class="form-group col-xs-6">
-							<a data-toggle="tab" href="#review" class="btn btn-success pull-right">Review <span class="glyphicon glyphicon-arrow-right"></span></a>
+							<a data-toggle="tab" href="#review" class="btn btn-default pull-right">Review <span class="glyphicon glyphicon-arrow-right"></span></a>
 						</div>
 					</div>
 				</div>
