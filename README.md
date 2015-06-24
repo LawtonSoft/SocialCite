@@ -7,7 +7,7 @@ SocialCite utilizes industry standards including jQuery, Bootstrap and Glyphicon
 
 It's easier than ever to make a website with other CMSs, but are the tools adequate for your needs?
 
-SocialCite uses its sister project, the PHP implimentation of Fram3w0rk, a project designed to unify cross-language differences. (Currently being developed in PHP and Python flavors.)
+SocialCite utilizes a MVC framework style approach and is built using its sister project, the PHP implimentation of Fram3w0rk, a project designed to unify cross-language differences. (Currently being developed in PHP and Python flavors.)
 
 Desktop & mobile optimized
 
@@ -20,4 +20,4 @@ We give you the ability to mold your creation any way you would like. Sure, ther
 
 With a minimalistic approach towards CMS, SocialCite is focused towards you, the developer.
 
-For more info, visit the documentation and FAQs, or download SocialCite.
+For more info, visit the <a href="http://www.lawtonsoft.com/projects/socialcite/documentation">documentation</a> and <a href="http://www.lawtonsoft.com/projects/socialcite/faqs">FAQs</a>.
