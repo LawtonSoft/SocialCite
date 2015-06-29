@@ -5,12 +5,15 @@ RewriteEngine On
 RewriteBase /
 RewriteCond %{SCRIPT_FILENAME} !-d
 RewriteCond %{SCRIPT_FILENAME} !-f
+RewriteCond %{SCRIPT_FILENAME}/index.php !-f
 RewriteRule ^/?(files?|(re)?sources?|src)/?(.*?)/?\??$ index.php?TYPE=RESOURCE&PATH=$3&%{QUERY_STRING} [NC,L]
 RewriteCond %{SCRIPT_FILENAME} !-d
 RewriteCond %{SCRIPT_FILENAME} !-f
+RewriteCond %{SCRIPT_FILENAME}/index.php !-f
 RewriteRule ^/?(add[-_]?ons?|modules?|plug[-_]?ins?)([-_]?blocks?)?/?(.*?)/?\??$ index.php?TYPE=MODULE&PATH=$3&%{QUERY_STRING} [NC,L]
 #RewriteCond %{SCRIPT_FILENAME} !-d
 RewriteCond %{SCRIPT_FILENAME} !-f
+RewriteCond %{SCRIPT_FILENAME}/index.php !-f
 RewriteRule ^(.*?)/?\??$ index.php?TYPE=PAGE&PATH=$1&%{QUERY_STRING} [NC,L]
 
 ErrorDocument 500 /errors/500.php
