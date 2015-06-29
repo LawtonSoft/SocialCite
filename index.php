@@ -1,13 +1,15 @@
 <?php
 	require_once('global.php');
 	
+	switch($_VARS["TYPE"]) {
 	// PAGES
-	if(!isset($_REQUEST["TYPE"]) || $_REQUEST["TYPE"] == 'PAGE') {
-		$_VARS["PAGE"]['url_request'] = $_REQUEST["PATH"];
+	default:
+	case 'PAGE':
+		$_VARS["PAGE"]['url_request'] = $_VARS["PATH"];
 		$_VARS["PAGE"]['status_code'] = array('id' => 200);
 		// Pull page data
 		if(isset($_VARS["PAGE"]['url_request']) && !empty($_VARS["PAGE"]['url_request'])) {
-			$page = Log::$status[$DBI->execute('SELECT page.*, page_type.description, page_type.noindex, user.username, user.first_name, user.last_name FROM page LEFT JOIN user ON page.author_user_id = user.id LEFT JOIN page_type ON page.page_type_id = page_type.id WHERE page.url = "' . $_VARS["PAGE"]['url_request'] . '";', MYSQL_ASSOC)]['data']['result'][0];
+			$page = Log::$status[$DBI->execute('SELECT page.*, page_type.description page_type, page_type.noindex, user.username, user.first_name, user.last_name FROM page LEFT JOIN user ON page.author_user_id = user.id LEFT JOIN page_type ON page.page_type_id = page_type.id WHERE page.url = "' . $_VARS["PAGE"]['url_request'] . '";', MYSQL_ASSOC)]['data']['result'][0];
 			
 			// Check page aliases
 			if(!isset($page) || empty($page)) {
@@ -75,10 +77,11 @@
 		if(isset($_VARS["PAGE"]['header'])) eval('?>' . $_VARS["PAGE"]['header']);
 		
 		Page::template();
-	}
+		break;
+	
 	// MODULES
-	elseif($_REQUEST["TYPE"] == 'MODULE') {
-		$_VARS["MODULE"]['name'] = $_REQUEST["PATH"];
+	case 'MODULE':
+		$_VARS["MODULE"]['name'] = $_VARS["PATH"];
 		
 		// Pull module data
 		if(isset($_VARS["MODULE"]['name']) && !empty($_VARS["MODULE"]['name'])) $module = Module::get($_VARS["MODULE"]["name"]);
@@ -119,10 +122,11 @@
 		}
 		unset($page);
 		unset($module);
-	}
+		break;
+	
 	// RESOURCES
-	elseif($_REQUEST["TYPE"] == 'RESOURCE') {
-		$_VARS["FILE"]['path'] = $_REQUEST["PATH"];
+	case 'RESOURCE':
+		$_VARS["FILE"]['path'] = $_VARS["PATH"];
 		$_VARS["FILE"]['download'] = $_REQUEST["download"];
 		
 		// Pull file data
