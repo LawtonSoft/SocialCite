@@ -1,6 +1,11 @@
 <?php
 	date_default_timezone_set('UTC');
 	$_VARS["SOCIALCITE"]["version"] = "v0.5 [Alpha]";
+	if(isset($_POST) && !empty($_POST)):
+		header('Content-type: application/json');
+		
+		echo json_encode($_POST);
+	else:
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -11,7 +16,7 @@
 		<meta name="robots" content="noindex">
 
 		<title>SocialCite - Set-up</title>
-		<link rel="shortcut icon" href="./favicon.png">
+		<link rel="shortcut icon" href="favicon.png">
 		
 		<!-- BEGIN jQuery -->
 		<script src="//code.jquery.com/jquery-latest.min.js"></script>
@@ -57,18 +62,18 @@
 					<a class="navbar-brand" href="#">SocialCite</a>
 				</div>
 				<div class="navbar-collapse collapse">
-					<ul class="nav navbar-nav">
-						<li><a data-toggle="tab" href="#welcome">Welcome!</a></li>
+					<ul class="nav navbar-nav" role="tablist">
+						<li><a data-toggle="tab" role="tab" href="#welcome">Welcome!</a></li>
 						<li>
 							<a href="#" data-toggle="dropdown" class="dropdown-toggle">Configuration <b class="caret"></b></a>
 							<ul class="dropdown-menu">
-								<li><a data-toggle="tab" href="#site">Website Set-up</a></li>
-								<li><a data-toggle="tab" href="#db">Database</a></li>
-								<li><a data-toggle="tab" href="#ftp">File Transfer</a></li>
+								<li><a data-toggle="tab" role="tab" href="#site">Website</a></li>
+								<li><a data-toggle="tab" role="tab" href="#db">Database</a></li>
+								<li><a data-toggle="tab" role="tab" href="#ftp">File Transfer</a></li>
 							</ul>
 						</li>
-						<li><a data-toggle="tab" href="#review">Review</a></li>
-						<li class="disabled"><a data-toggle="tab" href="#initiate">Initiate</a></li>
+						<li><a data-toggle="tab" role="tab" href="#review">Review</a></li>
+						<li class="disabled"><a data-toggle="tab" role="tab" href="#summary">Summary</a></li>
 					</ul>
 				</div>
 			</div>
@@ -78,7 +83,7 @@
 				<div id="welcome" role="tabpanel" class="tab-pane fade in active">
 					<div class="row">
 						<div class="form-group col-xs-offset-6 col-xs-6">
-							<a data-toggle="tab" href="#site" class="btn btn-success pull-right">Website Set-up <span class="glyphicon glyphicon-arrow-right"></span></a>
+							<a data-toggle="tab" href="#site" class="btn btn-success pull-right">Website <span class="glyphicon glyphicon-arrow-right"></span></a>
 						</div>
 					</div>
 						<h1>SocialCite Set-up</h1>
@@ -94,7 +99,7 @@
 					</div>
 					<div class="row">
 						<div class="form-group col-xs-offset-6 col-xs-6">
-							<a data-toggle="tab" href="#site" class="btn btn-success pull-right">Website Set-up <span class="glyphicon glyphicon-arrow-right"></span></a>
+							<a data-toggle="tab" href="#site" class="btn btn-success pull-right">Website <span class="glyphicon glyphicon-arrow-right"></span></a>
 						</div>
 					</div>
 				</div>
@@ -107,7 +112,7 @@
 							<a data-toggle="tab" href="#db" class="btn btn-default pull-right">Database <span class="glyphicon glyphicon-arrow-right"></span></a>
 						</div>
 					</div>
-					<h1>Website Set-up</h1>
+					<h1>Website</h1>
 					<p>We'll start with the easy stuff...</p>
 					<form>
 						<div class="row">
@@ -137,25 +142,24 @@
 							</div>
 						</div>
 						<hr>
-						<p>And now, to the nitty gritty...</p>
 						<div class="row">
 							<div class="col-sm-6">
-								<div class="form-group has-warning has-feedback">
-									<label class="control-label" for="siteFram3w0rkPath">Fram3w0rk path</label>
-									<input type="text" class="form-control" id="siteFram3w0rkPath" placeholder="/var/www/html/Fram3w0rk/" required aria-describedby="siteFram3w0rkPathStatus" pattern="^(\/|[a-z]\:\\).*">
-									<span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true"></span>
-									<span id="siteFram3w0rkPathStatus" class="sr-only">warning</span>
+								<div class="checkbox has-success has-feedback">
+									<label class="control-label" for="siteUserlessSystem">
+										<input type="checkbox" id="siteUserlessSystem" placeholder="Administrator" aria-describedby="siteUserlessSystemStatus" pattern="^\w+$"> <strong>Userless System <small>(Optional)</small></strong>
+									</label>
+									<span id="siteUserlessSystemStatus" class="sr-only">success</span>
 								</div>
 							</div>
 							<div class="col-sm-6">
-								<p>File path to Fram3w0rk. You can install Fram3w0rk locally under the same directory. <strong>This is a requirement for this set-up tool to work.</strong> Upon an invalid or incompatible version of Fram3w0rk, this set-up will return an error.</p>
+								<p>Check if you wish to be automatically signed into the system without a password. <strong>Only use this is you are using a <code>localhost</code> or are secured by other means (e.g., Apache web login authentication).</strong></p>
 							</div>
 						</div>
 						<div class="row">
 							<div class="col-sm-6">
 								<div class="form-group has-success has-feedback">
 									<label class="control-label" for="siteAdministratorName">Administrator Username <small>(Optional)</small></label>
-									<input type="text" class="form-control" id="siteAdministratorName" placeholder="Administrator" aria-describedby="siteAdministratorNameStatus" pattern="^\w+$">
+									<input type="text" class="form-control" id="siteAdministratorName" placeholder="Administrator" aria-describedby="siteAdministratorNameStatus" pattern="^\w+$" data-default="Administrator">
 									<span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>
 									<span id="siteAdministratorNameStatus" class="sr-only">success</span>
 								</div>
@@ -168,13 +172,80 @@
 							<div class="col-sm-6">
 								<div class="form-group has-warning has-feedback">
 									<label class="control-label" for="siteAdministratorPassword">Administrator Password</label>
-									<input type="password" class="form-control" id="siteAdministratorPassword" placeholder="paSSw0rd" required aria-describedby="siteAdministratorPasswordStatus">
+									<input type="password" class="form-control" id="siteAdministratorPassword" placeholder="paSSw0rd" required aria-describedby="siteAdministratorPasswordStatus" pattern=".{6}">
 									<span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true"></span>
 									<span id="siteAdministratorPasswordStatus" class="sr-only">warning</span>
 								</div>
 							</div>
 							<div class="col-sm-6">
-								<p>Password to access the default SocialCite administrator. <strong>Warning! Do not forget this password.</strong></p>
+								<p>Password to access the default SocialCite administrator. Must be 6 or more characters.</p>
+							</div>
+						</div>
+						<hr>
+						<p>And now, to the nitty gritty...</p>
+						<div class="row">
+							<div class="col-sm-6">
+								<div class="form-group has-warning has-feedback">
+									<label class="control-label" for="siteFram3w0rkPath">Fram3w0rk path</label>
+									<input type="text" class="form-control" id="siteFram3w0rkPath" placeholder="/var/www/html/Fram3w0rk/" required aria-describedby="siteFram3w0rkPathStatus" pattern="^(\.{0,2}\/|[a-z]\:\\).*">
+									<span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true"></span>
+									<span id="siteFram3w0rkPathStatus" class="sr-only">warning</span>
+								</div>
+							</div>
+							<div class="col-sm-6">
+								<p>File path to Fram3w0rk. You can install Fram3w0rk locally under the same directory. <strong>This is a requirement for this set-up tool to work.</strong> Upon an invalid or incompatible version of Fram3w0rk, this set-up will return an error.</p>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-sm-6">
+								<div class="form-group has-warning has-feedback">
+									<label class="control-label" for="siteCookieDomain">Cookie Domain</label>
+									<input type="text" class="form-control" id="siteCookieDomain" placeholder=".example.com" required aria-describedby="siteCookieDomainStatus" pattern="^\.?(\w+.)+\w+">
+									<span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true"></span>
+									<span id="siteCookieDomainStatus" class="sr-only">warning</span>
+								</div>
+							</div>
+							<div class="col-sm-6">
+								<p>Specify the cookie domain. In most cases, this is your domain preceeded by a cookie. <strong>Warning! Do not forget this password.</strong></p>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-sm-6">
+								<div class="form-group has-warning has-feedback">
+									<label class="control-label" for="siteCookieDomain">Cookie Path</label>
+									<input type="text" class="form-control" id="siteCookiePath" placeholder="/" required aria-describedby="siteCookiePathStatus" pattern="^/.*">
+									<span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true"></span>
+									<span id="siteCookiePathStatus" class="sr-only">warning</span>
+								</div>
+							</div>
+							<div class="col-sm-6">
+								<p>Specify the cookie path. In most cases, this is <code>/</code>.</p>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-sm-6">
+								<div class="form-group has-warning has-feedback">
+									<label class="control-label" for="siteCookieTimeout">Cookie Timeout</label>
+									<input type="text" class="form-control" id="siteCookieTimeout" placeholder="10080" required aria-describedby="siteCookieTimeoutStatus" pattern="^\d+$">
+									<span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true"></span>
+									<span id="siteCookieTimeoutStatus" class="sr-only">warning</span>
+								</div>
+							</div>
+							<div class="col-sm-6">
+								<p>Specify the time a cookie timeout (i.e., how long a user should be logged in for). <strong>Warning! Do not set for too short of a duration (e.g., 1 minute). This will make it very difficult to access and change this setting later.</strong></p>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-sm-6">
+								<div class="checkbox has-success has-feedback">
+									<label class="control-label" for="siteCookieSecured">
+										<input type="checkbox" id="siteCookieSecured" placeholder="Administrator" aria-describedby="siteCookieSecuredStatus" pattern="^\w+$"> <strong>Secured Cookies</strong>
+									</label>
+									<span id="siteCookieSecuredStatus" class="sr-only">success</span>
+								</div>
+							</div>
+							<div class="col-sm-6">
+								<p>Specify if the cookie should be sent over a secured transaction. It is highly recommended to if possible. However, <strong>you should not enable this if you do not have a secure.</strong></p>
 							</div>
 						</div>
 					</form>
@@ -190,7 +261,7 @@
 				<div id="db" role="tabpanel" class="tab-pane fade">
 					<div class="row">
 						<div class="form-group col-xs-6">
-							<a data-toggle="tab" href="#site" class="btn btn-default"><span class="glyphicon glyphicon-arrow-left"></span> Website Set-up</a>
+							<a data-toggle="tab" href="#site" class="btn btn-default"><span class="glyphicon glyphicon-arrow-left"></span> Website</a>
 						</div>
 						<div class="form-group col-xs-6">
 							<a data-toggle="tab" href="#ftp" class="btn btn-default pull-right">File Transfer <span class="glyphicon glyphicon-arrow-right"></span></a>
@@ -217,7 +288,7 @@
 							<div class="col-sm-6">
 								<div class="form-group has-warning has-feedback">
 									<label class="control-label" for="dbHost">Host</label>
-									<input type="url" class="form-control" id="dbHost" placeholder="http://127.0.0.1/ or https://example.com/" required aria-describedby="dbHostStatus" pattern="^https?://.+">
+									<input type="url" class="form-control" id="dbHost" placeholder="http://127.0.0.1/ or https://example.com/" required aria-describedby="dbHostStatus" pattern="^(https?://.+|\w+.*)">
 									<span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true"></span>
 									<span id="dbHostStatus" class="sr-only">warning</span>
 								</div>
@@ -269,7 +340,7 @@
 							<div class="col-sm-6">
 								<div class="form-group has-success has-feedback">
 									<label class="control-label" for="dbDatabase">Database Name <small>(Optional)</small></label>
-									<input type="text" class="form-control" id="dbDatabase" placeholder="socialcite" aria-describedby="dbDatabaseStatus">
+									<input type="text" class="form-control" id="dbDatabase" placeholder="socialcite" aria-describedby="dbDatabaseStatus" data-default="socialcite">
 									<span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>
 									<span id="dbDatabaseStatus" class="sr-only">success</span>
 								</div>
@@ -278,10 +349,18 @@
 								<p>Database to store SocialCite data in. If the database does not exist, the process will attempt to create. <strong>This will require proper user privileges.</strong> Defaults to <code>socialcite</code>.</p>
 							</div>
 						</div>
+						<div class="row">
+							<div class="col-sm-6">
+								<div class="text-center"><button type="button" class="btn btn-warning text-center" disabled>Test Connection</button></div>
+							</div>
+							<div class="col-sm-6">
+								<p>Click this button to test the database connection. It will determine if it has the privileges necessary to create the account.</p>
+							</div>
+						</div>
 					</form>
 					<div class="row">
 						<div class="form-group col-xs-6">
-							<a data-toggle="tab" href="#site" class="btn btn-default"><span class="glyphicon glyphicon-arrow-left"></span> Website Set-up</a>
+							<a data-toggle="tab" href="#site" class="btn btn-default"><span class="glyphicon glyphicon-arrow-left"></span> Website</a>
 						</div>
 						<div class="form-group col-xs-6">
 							<a data-toggle="tab" href="#ftp" class="btn btn-default pull-right">File Transfer <span class="glyphicon glyphicon-arrow-right"></span></a>
@@ -306,8 +385,8 @@
 									<select class="form-control" id="ftpType" required>
 										<option value="">&nbsp;</option>
 										<option value="ftp">FTP</option>
-										<option value="ftps">FTPS</option>
 										<option value="sftp">SFTP</option>
+										<option value="ftps">FTPS</option>
 									</select>
 								</div>
 							</div>
@@ -319,7 +398,7 @@
 							<div class="col-sm-6">
 								<div class="form-group has-warning has-feedback">
 									<label class="control-label" for="ftpHost">Host</label>
-									<input type="url" class="form-control" id="ftpHost" placeholder="http://127.0.0.1/ or https://example.com/" required aria-describedby="ftpHostStatus" pattern="^https?://.+">
+									<input type="url" class="form-control" id="ftpHost" placeholder="http://127.0.0.1/ or https://example.com/" required aria-describedby="ftpHostStatus" pattern="^(https?://.+|\w+.*)">
 									<span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true"></span>
 									<span id="ftpHostStatus" class="sr-only">warning</span>
 								</div>
@@ -371,13 +450,21 @@
 							<div class="col-sm-6">
 								<div class="form-group has-warning has-feedback">
 									<label class="control-label" for="ftpDirectory">Website Directory</label>
-									<input type="text" class="form-control" id="ftpDirectory" placeholder="/var/www/html/" required aria-describedby="ftpDirectoryStatus">
+									<input type="text" class="form-control" id="ftpDirectory" placeholder="/var/www/html/" required aria-describedby="ftpDirectoryStatus" pattern="^(\.{0,2}\/|[a-z]\:\\).*">
 									<span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true"></span>
 									<span id="ftpDirectoryStatus" class="sr-only">warning</span>
 								</div>
 							</div>
 							<div class="col-sm-6">
 								<p>Directory to store SocialCite data in. If the directory does not exist, the process will attempt to create. <strong>This will require proper user privileges.</strong></p>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-sm-6">
+								<div class="text-center"><button type="button" class="btn btn-warning text-center" disabled>Test Connection</button></div>
+							</div>
+							<div class="col-sm-6">
+								<p>Click this button to test the FTP connection. It will determine if it has the privileges necessary to connect and access the appropriate directory.</p>
 							</div>
 						</div>
 					</form>
@@ -398,21 +485,23 @@
 					</div>
 					<h1>Review</h1>
 					<p>Please review all of your settings here. You can go back at any point before the process start to make the necessary changes. If an error is encountered, the process will stop and return.</p>
-					<button class="btn btn-primary disabled">Set-up Your Website</button>
+					<div id="tables"></div>
+					<div class="progress-bar progress-bar-striped active hidden" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>
+					<button class="btn btn-primary disabled" id="initiate">Set-up Your Website</button>
 				</div>
-				<div id="initiate" role="tabpanel" class="tab-pane fade">
+				<div id="success" role="tabpanel" class="tab-pane fade">
 					<div class="row">
 						<div class="form-group col-xs-6">
 							<a data-toggle="tab" href="#welcome"><span class="glyphicon glyphicon-arrow-left"></span> Welcome</a>
 						</div>
 					</div>
-					<h1>Initiate</h1>
+					<h1>Success</h1>
 					<p>Congratulations! Now check out your new website!</p>
 					<a href="#" class="btn btn-success">Go!</a>
 				</div>
 			</div>
 			<br>
-			<footer class="well">
+			<footer class="well well-sm">
 				<p><a target="_blank" href="http://lawtonsoft.com/projects/socialcite">SocialCite</a> <?php echo $_VARS["SOCIALCITE"]["version"]; ?><br>
 				&copy; <?php echo date("Y"); ?> | <span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">LawtonSoft.com</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nd/4.0/">Creative Commons Attribution-NoDerivatives 4.0 International License</a>.</p>
 				<a rel="license" href="http://creativecommons.org/licenses/by-nd/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nd/4.0/88x31.png"></a>
@@ -421,3 +510,4 @@
 		<div id="modal01" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">&nbsp;</h4></div><div class="modal-body"></div><div class="modal-footer"><button type="button" class="btn" data-dismiss="modal">Close</button></div></div></div></div>
 	</body>
 </html>
+<?php endif; ?>
