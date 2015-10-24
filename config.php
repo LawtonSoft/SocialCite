@@ -22,7 +22,7 @@
 	define('DBI_DB', 'dbname');
 	define('DBI_PREFIX', '');
 	
-	//  ---       FTP        ---
+	//  ---        FTP        ---
 	define('FTP_SERVER', 'localhost');
 	define('FTP_USER', 'user');
 	define('FTP_PASS', 'password');
@@ -30,6 +30,9 @@
 	define('CMS_MODE', 'dev');
 	
 	//  ---     SECURITY      ---
-	
-	define('PASSWORD_HASH', '');
+	//       PASSWORD HASH
+	define('PASSWORD_HASH_OPTIONS', Array(
+		'cost' => 11,
+		'salt' => mcrypt_create_iv(22, MCRYPT_DEV_URANDOM),
+	));
 ?>
