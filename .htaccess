@@ -1,7 +1,8 @@
 Options +FollowSymLinks -Indexes
 
-RewriteEngine On
 
+<IfModule mod_rewrite.c>
+RewriteEngine On
 RewriteBase /
 RewriteCond %{SCRIPT_FILENAME} !-d
 RewriteCond %{SCRIPT_FILENAME} !-f
@@ -15,5 +16,6 @@ RewriteRule ^/?(add[-_]?ons?|modules?|plug[-_]?ins?)([-_]?blocks?)?/?(.*?)/?\??$
 RewriteCond %{SCRIPT_FILENAME} !-f
 RewriteCond %{SCRIPT_FILENAME}/index.php !-f
 RewriteRule ^(.*?)/?\??$ index.php?TYPE=PAGE&PATH=$1&%{QUERY_STRING} [NC,L]
+</IfModule>
 
 ErrorDocument 500 /errors/500.php
