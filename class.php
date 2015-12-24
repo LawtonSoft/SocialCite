@@ -15,9 +15,9 @@
 		
 		public static function template() {
 			$args = func_get_args();
-			if(isset($args[0])) $templateID = args[0];
-			else $templateID = $_VARS["WEBSITE"]['template_id'];
 			global $_VARS;
+			if(isset($args[0])) $templateID = $args[0];
+			else $templateID = $_VARS["WEBSITE"]['template_id'];
 			$DBI = Instance::get('DBI');
 			$DBI->connect();
 			
