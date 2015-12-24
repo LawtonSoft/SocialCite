@@ -9,17 +9,20 @@
 			$DBI->connect();
 			
 			$_VARS["PAGE"]['status_code'] = array('id' => 404);
-			$DBI->execute('SELECT * FROM page WHERE id = ' . $_VARS["WEBSITE"]["404_page_id"] . ';', MYSQL_ASSOC);
+			$DBI->execute('SELECT * FROM view_page page WHERE id = ' . $_VARS["WEBSITE"]["404_page_id"] . ';', MYSQL_ASSOC);
 			return Log::$statusLast['data']['result'][0];
 		}
 		
 		public static function template() {
+			$args = func_get_args();
+			if(isset($args[0])) $templateID = args[0];
+			else $templateID = $_VARS["WEBSITE"]['template_id'];
 			global $_VARS;
 			$DBI = Instance::get('DBI');
 			$DBI->connect();
 			
 			if($_VARS["PAGE"]['page_type_id'] < 3) {
-				$code = $DBI->execute('SELECT code FROM template WHERE id =' . $_VARS["WEBSITE"]['template_id'] . ';',MYSQL_ASSOC);
+				$code = $DBI->execute('SELECT code FROM template WHERE id =' . $templateID . ';',MYSQL_ASSOC);
 				eval('?>' . $code['data']['result'][0]['code']);
 			}
 			else {
@@ -210,7 +213,7 @@
 			$result["success"] = 0;
 			
 			if(isset($username) && !empty($username)) {
-				$DBI->execute('SELECT * FROM user WHERE lower(username) = "' . strtolower($username) . '";',MYSQL_ASSOC);
+				$DBI->execute('SELECT * FROM user WHERE lower(username) = "' . strtolower($username) . '" OR lower(email_address) = "' . strtolower($username) . '";',MYSQL_ASSOC);
 				if($data = Log::$statusLast["data"]["result"][0]) {
 					if(isset($args[1])) $verify = password_verify($args[1], $data["password"]);
 					elseif(isset($_COOKIE["password"])) $verify = ($data["password"] == $_COOKIE["password"]);
