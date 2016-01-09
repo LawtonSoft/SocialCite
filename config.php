@@ -27,8 +27,6 @@
 	define('FTP_USER', 'user');
 	define('FTP_PASS', 'password');
 	
-	define('CMS_MODE', 'dev');
-	
 	//  ---     SECURITY      ---
 	//       PASSWORD HASH
 	define('PASSWORD_HASH_OPTIONS', Array(
