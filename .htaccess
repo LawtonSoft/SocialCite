@@ -1,21 +1,30 @@
-Options +FollowSymLinks -Indexes
-
-
-<IfModule mod_rewrite.c>
-  RewriteEngine On
-  RewriteBase /
-  RewriteCond %{SCRIPT_FILENAME} !-d
-  RewriteCond %{SCRIPT_FILENAME} !-f
-  RewriteCond %{SCRIPT_FILENAME}/index.php !-f
-  RewriteRule ^/?(files?|(re)?sources?|src)/?(.*?)/?\??$ index.php?TYPE=RESOURCE&PATH=$3&%{QUERY_STRING} [NC,L]
-  RewriteCond %{SCRIPT_FILENAME} !-d
-  RewriteCond %{SCRIPT_FILENAME} !-f
-  RewriteCond %{SCRIPT_FILENAME}/index.php !-f
-  RewriteRule ^/?(add[-_]?ons?|modules?|plug[-_]?ins?)([-_]?blocks?)?/?(.*?)/?\??$ index.php?TYPE=MODULE&PATH=$3&%{QUERY_STRING} [NC,L]
-  #RewriteCond %{SCRIPT_FILENAME} !-d
-  RewriteCond %{SCRIPT_FILENAME} !-f
-  RewriteCond %{SCRIPT_FILENAME}/index.php !-f
-  RewriteRule ^(.*?)/?\??$ index.php?TYPE=PAGE&PATH=$1&%{QUERY_STRING} [NC,L]
-</IfModule>
+Options +FollowSymLinks
+Options -Indexes
+DirectoryIndex index.php index.html index.htm
 
 ErrorDocument 500 /errors/500.php
+<IfModule mod_rewrite.c>
+	RewriteEngine On
+	RewriteBase /
+
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteCond %{REQUEST_FILENAME}/index.php !-f
+	RewriteCond %{REQUEST_FILENAME} !-d
+	RewriteRule ^/?(files?|(re)?sources?|src)/?(.*?)\??$ index.php?TYPE=RESOURCE&PATH=$3&%{QUERY_STRING} [NC,L]
+
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteCond %{REQUEST_FILENAME}/index.php !-f
+	RewriteCond %{REQUEST_FILENAME} !-d
+	RewriteRule ^/?modules?/?(.*?)\??$ index.php?TYPE=MODULE&PATH=$1&%{QUERY_STRING} [NC,L]
+
+	RewriteCond %{REQUEST_FILENAME} robots.txt
+	RewriteRule . /modules/robots.txt [NC,L]
+
+	RewriteCond %{REQUEST_FILENAME} sitemap.xml
+	RewriteRule . /modules/sitemap.xml [NC,L]
+
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteCond %{REQUEST_FILENAME}/index.php !-f
+	#RewriteCond %{REQUEST_FILENAME} !-d
+	RewriteRule ^(.*?)\??$ index.php?TYPE=PAGE&PATH=$1&%{QUERY_STRING} [NC,L]
+</IfModule>
