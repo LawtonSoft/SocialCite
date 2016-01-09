@@ -13,7 +13,7 @@
 	// MODULES
 	case 'MODULE':
 		$_VARS["MODULE"]['name'] = $_VARS["PATH"];
-		Module::writeCode('view/module', $_VARS);
+		Module::writeCode('view/module-code', $_VARS);
 		break;
 	
 	// RESOURCES
