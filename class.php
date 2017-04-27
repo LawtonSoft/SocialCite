@@ -43,6 +43,7 @@
 		}
 	}
 	
+	
 	// Module Class
 	class Module Extends Instance {
 		protected static $instance = NULL;
@@ -146,6 +147,7 @@
 			return Log::$statusLast["data"]["result"];
 		}
 	}
+	
 	
 	// (User) Account Class
 	class Account Extends Instance {
